@@ -21,11 +21,11 @@
     <header class="text-center mb-8">
       <img src="https://i.postimg.cc/SsQyTk6X/Screenshot-2026-08-18-124039.png" class="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover mx-auto shadow-lg border-4 border-white" alt="logo">
       <h1 class="mt-4 text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-500">ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ</h1>
-      <p class="text-slate-500 mt-2">โรงเรียนเมืองสุราษฎร์ธานี</p>
+      <p class="text-slate-500 mt-2">การพัฒนาหลักสูตรพหุปัญญา(MIP)และนวัตกรรมการจัดการเรียนรู้สู่การพัฒนาคุณภาพผู้เรียน</p>
     </header>
 
     <section id="loginSection" class="max-w-md mx-auto space-y-4">
-      <input id="empId" type="text" inputmode="numeric" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกเลขบัตรประชาชน">
+      <input id="empId" type="text" inputmode="numeric" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกเลขประชาชน">
       <button onclick="login()" class="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-white font-bold shadow-lg hover:-translate-y-0.5 transition">เข้าสู่ระบบ</button>
       <button onclick="adminLogin()" class="w-full text-sm text-slate-400 hover:text-indigo-600 font-semibold">🔒 สำหรับผู้ดูแลระบบ</button>
     </section>
@@ -79,6 +79,12 @@
         </section>
 
         <section id="roomSection" class="menu-card">
+          <div class="mb-5 rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 shadow-sm">
+            <div class="flex items-start gap-3 text-amber-900 font-extrabold">
+              <span class="text-2xl leading-none">📢</span>
+              <p class="leading-relaxed">ประกาศ: ลงห้องพักเฉพาะครู ผู้ติดตามแอดมินจะเป็นคนลงให้ค่ะ</p>
+            </div>
+          </div>
           <div class="flex flex-col md:flex-row justify-between gap-2 mb-4">
             <div>
               <h2 class="font-extrabold text-slate-800 text-lg">3. 🏨 เลือกห้องพัก</h2>
@@ -97,10 +103,26 @@
           </div>
         </section>
 
+        <section id="foodSection" class="menu-card">
+          <h2 class="font-extrabold text-slate-800 text-lg mb-4">4. 🍲 ข้อมูลการแพ้อาหาร / ข้อจำกัดด้านอาหาร</h2>
+          <label class="block text-sm font-semibold text-slate-600 mb-2">เลือกประเภทอาหาร</label>
+          <select id="foodType" onchange="toggleFoodOther()" class="w-full rounded-xl border-2 border-slate-200 p-3 outline-none focus:border-indigo-400">
+            <option value="ไม่มี (ทานได้ปกติ)">ไม่มี (ทานได้ปกติ)</option>
+            <option value="ฮาลาล / มุสลิม">ฮาลาล / มุสลิม</option>
+            <option value="มังสวิรัติ / เจ">มังสวิรัติ / เจ</option>
+            <option value="แพ้อาหารทะเล">แพ้อาหารทะเล</option>
+            <option value="อื่นๆ">อื่นๆ (ระบุรายละเอียดเพิ่มเติม)</option>
+          </select>
+          <div id="foodOtherDiv" class="hidden mt-3">
+            <label class="block text-sm font-semibold text-slate-600 mb-2">รายละเอียดเพิ่มเติม</label>
+            <input type="text" id="foodDetail" class="w-full rounded-xl border-2 border-slate-200 p-3 outline-none focus:border-indigo-400" placeholder="ระบุอาหารที่แพ้ หรือข้อจำกัดด้านอาหาร">
+          </div>
+        </section>
+
         <section id="busSection" class="menu-card">
           <div class="flex flex-col md:flex-row justify-between gap-3 mb-4">
             <div>
-              <h2 class="font-extrabold text-slate-800 text-lg">4. 💺 เลือกที่นั่งบนรถทัวร์</h2>
+              <h2 class="font-extrabold text-slate-800 text-lg">5. 💺 เลือกที่นั่งบนรถทัวร์</h2>
               <p class="text-sm text-slate-500 mt-1">หมายเลขที่มีชื่อแล้วจะเลือกไม่ได้</p>
             </div>
             <a id="seatMapLink" href="#" target="_blank" class="hidden px-4 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 font-bold text-sm self-start">🗺️ ดูภาพแผนผังรถ</a>
@@ -121,7 +143,7 @@
 
       <div class="menu-card">
         <h3 class="font-extrabold text-lg mb-4">⚙️ เปิด / ปิดเมนู</h3>
-        <div id="menuToggles" class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3"></div>
+        <div id="menuToggles" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3"></div>
         <div class="text-xs text-slate-400 mt-3">ลิงก์ผังรถแก้ไขได้ในชีต Config → BusSeatImageURL</div>
       </div>
 
@@ -199,13 +221,13 @@ function errorMessage(err) {
   return err && err.message ? err.message : String(err || 'Unknown error');
 }
 function esc(v='') { return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-function isOn(key) { return String(config[key] || 'OFF').toUpperCase() === 'ON'; }
+function isOn(key) { const defaults = { TransportMenu:'ON', FollowerMenu:'ON', RoomMenu:'ON', FoodMenu:'ON', BusMenu:'ON', SummaryMenu:'ON' }; return String(config[key] ?? defaults[key] ?? 'OFF').toUpperCase() === 'ON'; }
 function logout(){ stopRealtime(); location.reload(); }
 
 async function login() {
   if (isSubmitting) return;
   const empId = document.getElementById('empId').value.trim();
-  if (!empId) return Swal.fire('แจ้งเตือน','กรอกเลขบัตรประชาชน','warning');
+  if (!empId) return Swal.fire('แจ้งเตือน','กรอกเลขประชาชน','warning');
   Swal.fire({title:'กำลังตรวจสอบข้อมูล...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
   try {
     const res = await api({action:'login',empId});
@@ -245,7 +267,7 @@ function renderQuickLinks(){
 }
 
 function applyMenuConfig(){
-  [['transportSection','TransportMenu'],['followerSection','FollowerMenu'],['roomSection','RoomMenu']].forEach(([id,key])=>document.getElementById(id).classList.toggle('hidden',!isOn(key)));
+  [['transportSection','TransportMenu'],['followerSection','FollowerMenu'],['roomSection','RoomMenu'],['foodSection','FoodMenu']].forEach(([id,key])=>document.getElementById(id).classList.toggle('hidden',!isOn(key)));
   const map=config.BusSeatImageURL||'';
   const link=document.getElementById('seatMapLink');
   link.classList.toggle('hidden',!map); if(map) link.href=map;
@@ -261,6 +283,20 @@ function getFollowerDetails(){
   const count=Number(document.getElementById('followerCount').value||0); if(!count) return '-';
   const arr=[]; for(let i=1;i<=count;i++) arr.push(`คนที่ ${i}: ${document.getElementById('fg'+i).value}, ${document.getElementById('fa'+i).value}`);
   return arr.join(' | ');
+}
+
+function toggleFoodOther(){
+  const type=document.getElementById('foodType')?.value||'';
+  const show=type==='อื่นๆ' || type==='แพ้อาหารทะเล';
+  document.getElementById('foodOtherDiv')?.classList.toggle('hidden',!show);
+}
+function getFoodAllergy(){
+  if(!isOn('FoodMenu')) return '-';
+  const type=document.getElementById('foodType')?.value||'ไม่มี (ทานได้ปกติ)';
+  const detail=document.getElementById('foodDetail')?.value.trim()||'';
+  if(type==='อื่นๆ') return detail ? `อื่นๆ: ${detail}` : 'อื่นๆ';
+  if(type==='แพ้อาหารทะเล' && detail) return `แพ้อาหารทะเล (${detail})`;
+  return type;
 }
 
 function selectRoom(roomNo){
@@ -318,7 +354,7 @@ async function submitData(){
   if(!confirm.isConfirmed)return;
   isSubmitting=true; Swal.fire({title:'กำลังบันทึก...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
   try{
-    const res=await api({action:'submitData',empId:currentEmpId,transport,hasFollower:count?`${count} คน`:'ไม่มี',followerDetails:getFollowerDetails(),roomSelect:selectedRoom,bedType:document.querySelector('input[name="bed"]:checked')?.value||'เตียงคู่',busSeat:selectedSeat||'-'});
+    const res=await api({action:'submitData',empId:currentEmpId,transport,hasFollower:count?`${count} คน`:'ไม่มี',followerDetails:getFollowerDetails(),roomSelect:selectedRoom,bedType:document.querySelector('input[name="bed"]:checked')?.value||'เตียงคู่',foodAllergy:getFoodAllergy(),busSeat:selectedSeat||'-'});
     isSubmitting=false;
     if(!res.success)return Swal.fire('บันทึกไม่สำเร็จ',res.message,'error');
     await Swal.fire('สำเร็จ','บันทึกข้อมูลเรียบร้อยแล้ว','success'); login();
@@ -330,7 +366,7 @@ function showPending(){
   Swal.fire({title:`ยังไม่ลงข้อมูล ${pendingList.length} คน`,html:`<div class="text-left max-h-80 overflow-y-auto bg-slate-50 rounded-xl p-4">${pendingList.map((n,i)=>`${i+1}. ${esc(n)}`).join('<br>')}</div>`,confirmButtonText:'ปิด'});
 }
 function renderMySummary(u){
-  const items=[['🚌 การเดินทาง',u.transport||'-'],['👨‍👩‍👧 ผู้ติดตาม',(u.follower||'-')+(u.followerDetails&&u.followerDetails!=='-'?`<br><span class="text-xs text-slate-500">${esc(u.followerDetails)}</span>`:'')],['🏨 ห้องพัก',u.room&&u.room!=='-'?`ห้อง ${esc(u.room)} (${esc(u.bed||'-')})`:'-'],['💺 ที่นั่งรถ',u.busSeat||'-']];
+  const items=[['🚌 การเดินทาง',u.transport||'-'],['👨‍👩‍👧 ผู้ติดตาม',(u.follower||'-')+(u.followerDetails&&u.followerDetails!=='-'?`<br><span class="text-xs text-slate-500">${esc(u.followerDetails)}</span>`:'')],['🏨 ห้องพัก',u.room&&u.room!=='-'?`ห้อง ${esc(u.room)} (${esc(u.bed||'-')})`:'-'],['🍲 อาหาร / การแพ้อาหาร',esc(u.foodAllergy||'-')],['💺 ที่นั่งรถ',u.busSeat||'-']];
   document.getElementById('mySummary').innerHTML=items.map(([k,v])=>`<div class="bg-white rounded-xl border border-emerald-100 p-4"><div class="text-xs font-bold text-slate-400">${k}</div><div class="font-bold mt-1">${v}</div></div>`).join('');
 }
 function renderPublicSummary(){
@@ -380,7 +416,7 @@ async function refreshAdmin(first=false){
 function renderAdmin(){
   const reg=adminData.registered||[], pend=adminData.pending||[], rooms=adminData.rooms||[], seats=adminData.seats||[];
   document.getElementById('adminStats').innerHTML=[['ลงแล้ว',reg.length,'✅'],['ยังไม่ลง',pend.length,'⏳'],['ห้องเต็ม',rooms.filter(r=>r.isFull).length,'🏨'],['ที่นั่งว่าง',seats.filter(s=>!s.isBooked).length,'💺']].map(([t,n,i])=>`<div class="rounded-2xl bg-white border p-4"><div class="text-2xl">${i}</div><div class="text-2xl font-extrabold mt-2">${n}</div><div class="text-sm text-slate-500">${t}</div></div>`).join('');
-  const defs=[['TransportMenu','การเดินทาง'],['FollowerMenu','ผู้ติดตาม'],['RoomMenu','ห้องพัก'],['BusMenu','ที่นั่งรถ'],['SummaryMenu','หน้าสรุป']];
+  const defs=[['TransportMenu','การเดินทาง'],['FollowerMenu','ผู้ติดตาม'],['RoomMenu','ห้องพัก'],['FoodMenu','อาหาร'],['BusMenu','ที่นั่งรถ'],['SummaryMenu','หน้าสรุป']];
   document.getElementById('menuToggles').innerHTML=defs.map(([key,label])=>`<button onclick="toggleMenu('${key}')" class="rounded-xl border-2 p-3 text-left ${String(config[key]).toUpperCase()==='ON'?'border-emerald-300 bg-emerald-50':'border-slate-200 bg-slate-50'}"><div class="font-bold">${label}</div><div class="text-xs mt-1 ${String(config[key]).toUpperCase()==='ON'?'text-emerald-600':'text-slate-400'}">${String(config[key]).toUpperCase()==='ON'?'● เปิดใช้งาน':'○ ปิดใช้งาน'}</div></button>`).join('');
   renderAdminContent();
 }
@@ -392,7 +428,7 @@ function setAdminTab(tab){currentAdminTab=tab;document.querySelectorAll('.admin-
 function renderAdminContent(){
   const c=document.getElementById('adminContent'), d=adminData;
   if(currentAdminTab==='registered'){
-    c.innerHTML=`<h3 class="font-extrabold text-lg mb-4">ผู้ลงข้อมูลแล้ว (${d.registered.length})</h3><table class="w-full text-sm whitespace-nowrap"><thead><tr class="bg-indigo-50"><th class="p-3 text-left">ชื่อ</th><th class="p-3">เดินทาง</th><th class="p-3">ผู้ติดตาม</th><th class="p-3">ห้อง</th><th class="p-3">ที่นั่ง</th><th class="p-3">จัดการ</th></tr></thead><tbody>${d.registered.map(u=>`<tr class="border-b"><td class="p-3 font-bold">${esc(u.name)}</td><td class="p-3 text-center">${esc(u.transport)}</td><td class="p-3 text-center">${esc(u.follower)}</td><td class="p-3 text-center">${esc(u.room)}<br><span class="text-xs text-slate-400">${esc(u.bed)}</span></td><td class="p-3 text-center">${esc(u.busSeat)}</td><td class="p-3 text-center"><button onclick="cancelRegistration('${esc(u.empId)}','${esc(u.name)}')" class="px-3 py-2 bg-rose-50 border border-rose-200 text-rose-600 rounded-lg font-bold">ยกเลิก</button></td></tr>`).join('')||'<tr><td colspan="6" class="p-8 text-center text-slate-400">ยังไม่มีข้อมูล</td></tr>'}</tbody></table>`;
+    c.innerHTML=`<h3 class="font-extrabold text-lg mb-4">ผู้ลงข้อมูลแล้ว (${d.registered.length})</h3><table class="w-full text-sm whitespace-nowrap"><thead><tr class="bg-indigo-50"><th class="p-3 text-left">ชื่อ</th><th class="p-3">เดินทาง</th><th class="p-3">ผู้ติดตาม</th><th class="p-3">ห้อง</th><th class="p-3">อาหาร</th><th class="p-3">ที่นั่ง</th><th class="p-3">จัดการ</th></tr></thead><tbody>${d.registered.map(u=>`<tr class="border-b"><td class="p-3 font-bold">${esc(u.name)}</td><td class="p-3 text-center">${esc(u.transport)}</td><td class="p-3 text-center">${esc(u.follower)}</td><td class="p-3 text-center">${esc(u.room)}<br><span class="text-xs text-slate-400">${esc(u.bed)}</span></td><td class="p-3 text-center">${esc(u.foodAllergy||'-')}</td><td class="p-3 text-center">${esc(u.busSeat)}</td><td class="p-3 text-center"><button onclick="cancelRegistration('${esc(u.empId)}','${esc(u.name)}')" class="px-3 py-2 bg-rose-50 border border-rose-200 text-rose-600 rounded-lg font-bold">ยกเลิก</button></td></tr>`).join('')||'<tr><td colspan="7" class="p-8 text-center text-slate-400">ยังไม่มีข้อมูล</td></tr>'}</tbody></table>`;
   } else if(currentAdminTab==='pending'){
     c.innerHTML=`<h3 class="font-extrabold text-lg mb-4">ยังไม่ลงข้อมูล (${d.pending.length})</h3><div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">${d.pending.map((u,i)=>`<div class="rounded-xl bg-slate-50 border p-3"><span class="text-slate-400 mr-2">${i+1}.</span><b>${esc(u.name)}</b><div class="text-xs text-slate-400 mt-1">รหัส ${esc(u.empId)}</div></div>`).join('')||'<div class="text-emerald-600 font-bold">ลงข้อมูลครบทุกคนแล้ว</div>'}</div>`;
   } else if(currentAdminTab==='rooms'){

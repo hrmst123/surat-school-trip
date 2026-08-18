@@ -13,25 +13,23 @@
     }
     /* ปรับแต่ง Scrollbar ให้ดูสวยงาม */
     ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    ::-webkit-scrollbar-track { background: #f8fafc; border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-cyan-100 via-blue-50 to-indigo-100">
+<body class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-cyan-100 via-blue-50 to-indigo-100">
 
   <!-- Main Card -->
-  <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-3xl p-6 md:p-10 border border-white">
+  <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-4xl p-6 md:p-10 border border-white">
     
-    <!-- Header -->
+    <!-- Header & Logo -->
     <div class="text-center mb-8">
-      <div class="inline-block bg-blue-100 p-3 rounded-full mb-3 shadow-inner">
-        <span class="text-4xl">🚌🌴</span>
-      </div>
-      <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 tracking-tight">
+      <img src="https://img2.pic.in.th/MuangST2020.jpg" alt="Logo" class="h-28 w-28 mx-auto rounded-full shadow-lg mb-5 border-4 border-white object-cover">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 tracking-tight pb-1">
         ระบบจัดการศึกษาดูงาน
       </h2>
-      <p class="text-gray-500 mt-2 font-medium">กลุ่มบริหารงานบุคคล โรงเรียนเมืองสุราษฎร์ธานี</p>
+      <p class="text-gray-500 mt-2 font-medium text-lg">โรงเรียนเมืองสุราษฎร์ธานี</p>
     </div>
 
     <!-- Login Section -->
@@ -94,7 +92,7 @@
           
           <div id="followerDiv" class="hidden mt-4 p-5 bg-rose-50 border-2 border-rose-100 rounded-xl">
             <p class="text-sm text-rose-600 mb-4 font-semibold flex items-center">
-              <span class="text-lg mr-1">⚠️</span> หากผู้ติดตามอายุมากกว่า 12 ปี ระบบจะล็อกห้องให้ 2 ที่ (โปรดเลือกห้องที่ว่าง 100%)
+              <span class="text-lg mr-1">⚠️</span> หากผู้ติดตามอายุมากกว่า 12 ปี ระบบจะบังคับให้เลือกห้องที่ว่างทั้ง 2 เตียง
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
               <div class="flex-1">
@@ -115,10 +113,17 @@
           </div>
         </div>
 
-        <!-- 3. ห้องพัก -->
+        <!-- 3. ห้องพัก (แบบแสดงผลเป็นกริด) -->
         <div class="bg-white border-2 border-gray-100 rounded-2xl p-6 shadow-sm hover:border-blue-200 transition-colors">
-          <h3 class="font-bold mb-4 text-gray-800 text-lg flex items-center"><span class="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-2">3</span> เลือกห้องพัก</h3>
-          <select id="roomSelect" class="w-full border-2 border-gray-200 p-3 rounded-xl mb-5 focus:ring-4 focus:ring-blue-50 focus:border-blue-400 outline-none transition-all font-medium text-gray-700"></select>
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-gray-800 text-lg flex items-center"><span class="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-2">3</span> เลือกห้องพัก</h3>
+            <span class="text-xs font-semibold bg-blue-50 text-blue-600 px-3 py-1 rounded-full">คลิกที่ห้องเพื่อเลือก</span>
+          </div>
+          
+          <!-- Grid เลือกห้อง -->
+          <div id="roomSelectionGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-3 mb-5 bg-gray-50 rounded-xl border border-gray-200">
+            <!-- JavaScript จะสร้างการ์ดห้องพักตรงนี้ -->
+          </div>
           
           <div class="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
             <label class="inline-flex items-center cursor-pointer">
@@ -143,7 +148,7 @@
         </button>
       </div>
 
-      <!-- สรุปข้อมูล และ แดชบอร์ดห้องพัก -->
+      <!-- สรุปข้อมูล และ แดชบอร์ดห้องพัก (เมื่อทำรายการเสร็จ) -->
       <div id="summarySection" class="hidden space-y-6">
         
         <!-- ข้อมูลส่วนตัว -->
@@ -174,13 +179,18 @@
     </div>
   </div>
 
+  <!-- Footer Credit -->
+  <div class="text-center mt-8 mb-4 text-sm text-gray-500/80 font-medium tracking-wide">
+    APP @พัฒนาโดย กลุ่มบริหารงานบุคคล
+  </div>
+
   <script>
-    // เชื่อมต่อกับ API ของคุณแล้วครับ!
     const API_URL = 'https://script.google.com/macros/s/AKfycbwimbnWFaouMfJ-LYScYg7th8YuN_ImCyDo05CVMB9zVIfxZgBB9fEX4h7uYxyvTmWp8Q/exec'; 
     
     let pendingList = [];
     let currentUserName = '';
     let globalRooms = [];
+    let selectedRoomToBook = ''; // ตัวแปรเก็บห้องที่ผู้ใช้กำลังเลือก
 
     async function login() {
       const empId = document.getElementById('empId').value;
@@ -224,27 +234,7 @@
               </div>
             `;
 
-            let roomsGridHtml = '';
-            res.rooms.forEach(r => {
-              let bgClass = r.isFull ? 'bg-rose-50/50 border-rose-100' : (r.p1 ? 'bg-amber-50/50 border-amber-100' : 'bg-slate-50 border-slate-200');
-              let statusBadge = r.isFull ? '<span class="text-rose-600 text-xs font-bold bg-rose-100 px-2.5 py-0.5 rounded-full shadow-sm">เต็ม</span>' : 
-                               (r.p1 ? '<span class="text-amber-700 text-xs font-bold bg-amber-100 px-2.5 py-0.5 rounded-full shadow-sm">ว่าง 1</span>' : 
-                                       '<span class="text-emerald-600 text-xs font-bold bg-emerald-100 px-2.5 py-0.5 rounded-full shadow-sm">ว่าง 2</span>');
-              
-              roomsGridHtml += `
-                <div class="border-2 p-4 rounded-xl transition-all hover:shadow-md ${bgClass}">
-                  <div class="flex justify-between items-center border-b border-black/5 pb-2 mb-3">
-                    <span class="font-bold text-gray-700">ห้อง ${r.roomNo}</span>
-                    ${statusBadge}
-                  </div>
-                  <div class="text-sm text-gray-600 space-y-2">
-                    <div class="flex items-center"><span class="w-5 text-gray-400 text-xs">1.</span> <span class="truncate font-medium">${r.p1 || '<span class="text-gray-300 font-normal italic">ว่าง</span>'}</span></div>
-                    <div class="flex items-center"><span class="w-5 text-gray-400 text-xs">2.</span> <span class="truncate font-medium">${r.p2 || '<span class="text-gray-300 font-normal italic">ว่าง</span>'}</span></div>
-                  </div>
-                </div>
-              `;
-            });
-            document.getElementById('allRoomsGrid').innerHTML = roomsGridHtml;
+            document.getElementById('allRoomsGrid').innerHTML = generateRoomsGrid(res.rooms, true);
 
           } else {
             globalRooms = res.rooms;
@@ -263,32 +253,96 @@
       const followerDiv = document.getElementById('followerDiv');
       if (document.getElementById('hasFollower').value === 'มี') {
         followerDiv.classList.remove('hidden');
-        followerDiv.classList.add('animate-fade-in-down'); // Tailwind doesn't have this by default, but removing hidden is enough
       } else {
         followerDiv.classList.add('hidden');
       }
     }
 
+    // ฟังก์ชันสำหรับคลิกเลือกห้อง
+    function selectRoomToBook(roomNo) {
+      selectedRoomToBook = roomNo;
+      renderRooms(); // Re-render เพื่อเปลี่ยนสีไฮไลต์
+    }
+
+    // ฟังก์ชันสร้างการ์ดสำหรับหน้าฟอร์ม (เลือกห้อง)
     function renderRooms() {
       const hasFollower = document.getElementById('hasFollower').value;
       const f_age = document.getElementById('f_age').value;
       const needsTwoBeds = (hasFollower === 'มี' && f_age === '>12');
       
-      let rmHtml = '<option value="">-- กรุณาเลือกห้องพัก --</option>';
-      
+      let gridHtml = '';
+      let isValidSelection = false;
+
       globalRooms.forEach(r => {
-        if (r.isFull) {
-          rmHtml += `<option disabled class="text-gray-300">ห้อง ${r.roomNo} (เต็ม: ${r.p1}, ${r.p2})</option>`;
-        } else {
-          let hasOnePerson = (r.p1 !== ''); 
-          if (needsTwoBeds && hasOnePerson) {
-            rmHtml += `<option disabled class="text-rose-300">ห้อง ${r.roomNo} (เหลือ 1 ที่ - ไม่พอสำหรับผู้ติดตาม)</option>`;
-          } else {
-            rmHtml += `<option value="${r.roomNo}" class="text-gray-800">ห้อง ${r.roomNo} (ว่าง ${r.p1 ? '1' : '2'} ที่: ${r.p1})</option>`;
-          }
+        let isFull = r.isFull;
+        let hasOnePerson = (r.p1 !== ''); 
+        
+        // กฎ: ถ้าห้องเต็ม หรือ (ต้องการ 2 เตียงแต่ห้องมีคนอยู่แล้ว 1 คน) -> เลือกไม่ได้
+        let disabled = isFull || (needsTwoBeds && hasOnePerson);
+        
+        if (r.roomNo === selectedRoomToBook && !disabled) {
+          isValidSelection = true;
         }
+
+        // จัดการ CSS ตามสถานะ (เลือกอยู่, เลือกไม่ได้, ว่าง)
+        let borderClass = '';
+        if (disabled) {
+          borderClass = 'border-gray-200 opacity-60 bg-gray-100 cursor-not-allowed';
+        } else if (selectedRoomToBook === r.roomNo) {
+          borderClass = 'border-blue-500 bg-blue-50 ring-2 ring-blue-300 shadow-md transform scale-[1.02]';
+        } else {
+          borderClass = 'border-gray-200 bg-white hover:border-blue-400 hover:shadow-sm cursor-pointer hover:bg-blue-50/30';
+        }
+
+        let statusBadge = isFull ? '<span class="text-rose-600 text-[10px] font-bold bg-rose-100 px-2.5 py-0.5 rounded-full shadow-sm">เต็ม</span>' : 
+                         (r.p1 ? '<span class="text-amber-700 text-[10px] font-bold bg-amber-100 px-2.5 py-0.5 rounded-full shadow-sm">ว่าง 1</span>' : 
+                                 '<span class="text-emerald-600 text-[10px] font-bold bg-emerald-100 px-2.5 py-0.5 rounded-full shadow-sm">ว่าง 2</span>');
+
+        let clickAction = disabled ? '' : `onclick="selectRoomToBook('${r.roomNo}')"`;
+
+        gridHtml += `
+          <div ${clickAction} class="border-2 p-3 rounded-xl transition-all duration-200 ${borderClass}">
+            <div class="flex justify-between items-center border-b border-black/5 pb-2 mb-2">
+              <span class="font-bold text-gray-700">ห้อง ${r.roomNo} ${selectedRoomToBook === r.roomNo ? '✅' : ''}</span>
+              ${statusBadge}
+            </div>
+            <div class="text-xs text-gray-600 space-y-1.5">
+              <div class="flex items-center"><span class="w-4 text-gray-400">1.</span> <span class="truncate font-medium">${r.p1 || '<span class="text-gray-300 font-normal italic">ว่าง</span>'}</span></div>
+              <div class="flex items-center"><span class="w-4 text-gray-400">2.</span> <span class="truncate font-medium">${r.p2 || '<span class="text-gray-300 font-normal italic">ว่าง</span>'}</span></div>
+            </div>
+          </div>
+        `;
       });
-      document.getElementById('roomSelect').innerHTML = rmHtml;
+
+      // ล้างค่าที่เลือก หากเปลี่ยนใจเลือกผู้ติดตาม >12 ปี แต่ห้องที่คลิกไว้เหลือแค่ที่เดียว
+      if (!isValidSelection) selectedRoomToBook = ''; 
+      
+      document.getElementById('roomSelectionGrid').innerHTML = gridHtml;
+    }
+
+    // ฟังก์ชันสร้างการ์ดสำหรับหน้าแดชบอร์ด (สรุปดูเฉยๆ กดไม่ได้)
+    function generateRoomsGrid(rooms, isDashboard) {
+      let gridHtml = '';
+      rooms.forEach(r => {
+        let bgClass = r.isFull ? 'bg-rose-50/50 border-rose-100' : (r.p1 ? 'bg-amber-50/50 border-amber-100' : 'bg-slate-50 border-slate-200');
+        let statusBadge = r.isFull ? '<span class="text-rose-600 text-xs font-bold bg-rose-100 px-2.5 py-0.5 rounded-full shadow-sm">เต็ม</span>' : 
+                         (r.p1 ? '<span class="text-amber-700 text-xs font-bold bg-amber-100 px-2.5 py-0.5 rounded-full shadow-sm">ว่าง 1</span>' : 
+                                 '<span class="text-emerald-600 text-xs font-bold bg-emerald-100 px-2.5 py-0.5 rounded-full shadow-sm">ว่าง 2</span>');
+        
+        gridHtml += `
+          <div class="border-2 p-4 rounded-xl transition-all hover:shadow-md ${bgClass}">
+            <div class="flex justify-between items-center border-b border-black/5 pb-2 mb-3">
+              <span class="font-bold text-gray-700">ห้อง ${r.roomNo}</span>
+              ${statusBadge}
+            </div>
+            <div class="text-sm text-gray-600 space-y-2">
+              <div class="flex items-center"><span class="w-5 text-gray-400 text-xs">1.</span> <span class="truncate font-medium">${r.p1 || '<span class="text-gray-300 font-normal italic">ว่าง</span>'}</span></div>
+              <div class="flex items-center"><span class="w-5 text-gray-400 text-xs">2.</span> <span class="truncate font-medium">${r.p2 || '<span class="text-gray-300 font-normal italic">ว่าง</span>'}</span></div>
+            </div>
+          </div>
+        `;
+      });
+      return gridHtml;
     }
 
     function showPending() {
@@ -306,8 +360,7 @@
     }
 
     function submitData() {
-      const room = document.getElementById('roomSelect').value;
-      if(!room) return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกห้องพักให้เรียบร้อย', confirmButtonColor: '#3b82f6' });
+      if(!selectedRoomToBook) return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาคลิกเลือกห้องพักให้เรียบร้อย', confirmButtonColor: '#3b82f6' });
 
       Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
@@ -323,7 +376,7 @@
         transport: document.querySelector('input[name="transport"]:checked').value,
         hasFollower: document.getElementById('hasFollower').value,
         followerDetails: f_detail,
-        roomSelect: room,
+        roomSelect: selectedRoomToBook,
         bedType: document.querySelector('input[name="bed"]:checked').value,
         busSeat: document.getElementById('busSeat').value || '-'
       };

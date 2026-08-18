@@ -25,7 +25,7 @@
     </header>
 
     <section id="loginSection" class="max-w-md mx-auto space-y-4">
-      <input id="empId" type="text" inputmode="numeric" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกรหัสประจำตัวประชาชน">
+      <input id="empId" type="text" inputmode="numeric" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกเลขประจำตัวประชาชน">
       <button onclick="login()" class="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-white font-bold shadow-lg hover:-translate-y-0.5 transition">เข้าสู่ระบบ</button>
       <button onclick="adminLogin()" class="w-full text-sm text-slate-400 hover:text-indigo-600 font-semibold">🔒 สำหรับผู้ดูแลระบบ</button>
     </section>
@@ -227,7 +227,7 @@ function logout(){ stopRealtime(); location.reload(); }
 async function login() {
   if (isSubmitting) return;
   const empId = document.getElementById('empId').value.trim();
-  if (!empId) return Swal.fire('แจ้งเตือน','กรอกรหัสประจำตัวประชาชน','warning');
+  if (!empId) return Swal.fire('แจ้งเตือน','กรอกเลขประจำตัวประชาชน','warning');
   Swal.fire({title:'กำลังตรวจสอบข้อมูล...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
   try {
     const res = await api({action:'login',empId});
@@ -291,7 +291,7 @@ function toggleFoodOther(){
   document.getElementById('foodOtherDiv')?.classList.toggle('hidden',!show);
 }
 function getFoodAllergy(){
-  if(config.FoodMenu !== undefined && !isOn('FoodMenu')) return '-';
+  // ส่งค่าอาหารจริงเสมอ หากฟอร์มอาหารแสดงอยู่ ไม่ให้ Config เก่าทำให้ส่ง '-'
   const type=document.getElementById('foodType')?.value||'ไม่มี (ทานได้ปกติ)';
   const detail=document.getElementById('foodDetail')?.value.trim()||'';
   if(type==='อื่นๆ') return detail ? `อื่นๆ: ${detail}` : 'อื่นๆ';
@@ -357,7 +357,11 @@ async function submitData(){
     const res=await api({action:'submitData',empId:currentEmpId,transport,hasFollower:count?`${count} คน`:'ไม่มี',followerDetails:getFollowerDetails(),roomSelect:selectedRoom,bedType:document.querySelector('input[name="bed"]:checked')?.value||'เตียงคู่',foodAllergy:getFoodAllergy(),busSeat:selectedSeat||'-'});
     isSubmitting=false;
     if(!res.success)return Swal.fire('บันทึกไม่สำเร็จ',res.message,'error');
-    await Swal.fire('สำเร็จ','บันทึกข้อมูลเรียบร้อยแล้ว','success'); login();
+    const sentFood=getFoodAllergy();
+    if(res.savedFood!==undefined && String(res.savedFood)!==String(sentFood)){
+      return Swal.fire('ตรวจพบความผิดปกติ',`ส่งข้อมูลอาหาร: ${sentFood}<br>Server รับ: ${res.savedFood}`,'warning');
+    }
+    await Swal.fire('สำเร็จ',`บันทึกข้อมูลเรียบร้อยแล้ว<br><span class="text-sm">อาหาร: ${sentFood}</span>`,'success'); login();
   }catch(e){isSubmitting=false;Swal.fire('บันทึกไม่ได้',errorMessage(e),'error');}
 }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>รระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ | ร.ร.เมืองสุราษฎร์ธานี</title>
+  <title>ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ | ร.ร.เมืองสุราษฎร์ธานี</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
       <h2 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-500 tracking-tight pb-1">
         ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ
       </h2>
-      <p class="text-gray-500 mt-2 font-medium text-lg"> การพัฒนาหลักสูตรพหุปัญญา(MIP)และนวัตกรรมการจัดการเรียนรู้สู่การพัฒนาคุณภาพผู้เรียน</p>
+      <p class="text-gray-500 mt-2 font-medium text-lg">การพัฒนาหลักสูตรพหุปัญญา(MIP)และนวัตกรรมการจัดการเรียนรู้สู่การพัฒนาคุณภาพผู้เรียน</p>
     </div>
 
     <!-- Login Section -->
@@ -42,7 +42,7 @@
         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
           <span class="text-gray-400 text-lg">👤</span>
         </div>
-        <input type="text" id="empId" class="w-full rounded-2xl border-2 border-indigo-100 py-3.5 pl-12 pr-4 text-center text-lg focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none font-medium text-gray-700" placeholder="กรอกเลขบัตรประชาชน">
+        <input type="text" id="empId" class="w-full rounded-2xl border-2 border-indigo-100 py-3.5 pl-12 pr-4 text-center text-lg focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none font-medium text-gray-700" placeholder="กรอกรหัสประจำตัว">
       </div>
       <button onclick="login()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 px-4 rounded-2xl shadow-lg shadow-indigo-200 transform hover:-translate-y-1 transition-all duration-200 text-lg">
         เข้าสู่ระบบ
@@ -66,8 +66,7 @@
             <p class="text-sm text-indigo-500 font-bold tracking-wide uppercase mb-1">ยินดีต้อนรับ</p>
             <p id="userName" class="font-extrabold text-gray-800 text-2xl"></p>
           </div>
-          <!-- ปุ่มออกจากระบบสำหรับผู้ใช้ทั่วไป -->
-          <button onclick="location.reload()" class="bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 hover:border-rose-300 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center z-10">
+          <button onclick="logout()" class="bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 hover:border-rose-300 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center z-10">
             <span class="mr-1">🚪</span> ออกจากระบบ
           </button>
         </div>
@@ -122,7 +121,10 @@
 
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-bold text-gray-800 text-lg flex items-center"><span class="bg-blue-100 text-blue-700 rounded-lg w-8 h-8 flex items-center justify-center mr-3 shadow-sm">3</span> เลือกห้องพัก</h3>
-            <span class="text-xs font-semibold bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg border border-indigo-100">คลิกที่ห้องเพื่อเลือก</span>
+            <div class="flex items-center gap-2">
+              <span id="syncIndicator" class="hidden text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded-md animate-pulse">● Real-time Sync</span>
+              <span class="text-xs font-semibold bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg border border-indigo-100">คลิกที่ห้องเพื่อเลือก</span>
+            </div>
           </div>
           
           <div id="roomSelectionGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-3 mb-5 bg-gray-50/50 rounded-xl border border-gray-100"></div>
@@ -184,7 +186,9 @@
             <h3 class="font-bold text-gray-800 text-xl flex items-center">
               <span class="mr-2 text-indigo-500 text-2xl">🏨</span> สถานะห้องพักทั้งหมด
             </h3>
-            <span class="text-xs text-gray-500 font-bold bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 tracking-wide uppercase">Real-time</span>
+            <span class="text-xs text-emerald-600 font-bold bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100 flex items-center">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping mr-1.5"></span> Real-time
+            </span>
           </div>
           <div id="allRoomsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto pr-2 py-2"></div>
         </div>
@@ -196,7 +200,7 @@
           <h2 class="text-2xl font-bold text-gray-800 flex items-center">
             <span class="text-indigo-600 mr-2">📊</span> ข้อมูลสรุป (Admin)
           </h2>
-          <button onclick="location.reload()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm">
+          <button onclick="logout()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm">
             ออกจากระบบ
           </button>
         </div>
@@ -228,17 +232,63 @@
   </div>
 
   <script>
-    // ⚠️ นำ URL จากการ Deploy ของคุณมาใส่ตรงนี้
+    // ⚠️ นำ URL จากการ Deploy Web App ของคุณมาวางตรงนี้
     const API_URL = 'https://script.google.com/macros/s/AKfycbwimbnWFaouMfJ-LYScYg7th8YuN_ImCyDo05CVMB9zVIfxZgBB9fEX4h7uYxyvTmWp8Q/exec'; 
-    
+
     let pendingList = [];
     let currentUserName = '';
     let globalRooms = [];
-    let selectedRoomToBook = ''; 
+    let selectedRoomToBook = '';
+    let realtimeTimer = null;
+    let isSubmitting = false;
 
+    // ----------------------------------------------------
+    // Real-time Polling Sync
+    // ----------------------------------------------------
+    function startRealtimeSync() {
+      if (realtimeTimer) clearInterval(realtimeTimer);
+      // แอบดึงข้อมูลห้องพักล่าสุดอัปเดตทุกๆ 4 วินาที
+      realtimeTimer = setInterval(fetchRealtimeRooms, 4000);
+      document.getElementById('syncIndicator')?.classList.remove('hidden');
+    }
+
+    function stopRealtimeSync() {
+      if (realtimeTimer) clearInterval(realtimeTimer);
+    }
+
+    async function fetchRealtimeRooms() {
+      if (isSubmitting) return; // ไม่ดึงข้อมูลขณะกำลังกดบันทึก
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'getRooms' })
+        }).then(r => r.json());
+
+        if (res.success && res.rooms) {
+          globalRooms = res.rooms;
+
+          // ถ้าอยู่ในหน้าฟอร์มกรอก ให้รีเฟรชเฉพาะผังห้องพัก
+          if (!document.getElementById('surveyForm').classList.contains('hidden')) {
+            renderRooms();
+          }
+
+          // ถ้าอยู่ในหน้าสรุปผล ให้รีเฟรชผังห้องพักทั้งหมด
+          if (!document.getElementById('summarySection').classList.contains('hidden')) {
+            document.getElementById('allRoomsGrid').innerHTML = generateRoomsGrid(res.rooms);
+          }
+        }
+      } catch (err) {
+        console.log('Real-time sync error:', err);
+      }
+    }
+
+    // ----------------------------------------------------
+    // Authentication & Core Functions
+    // ----------------------------------------------------
     async function login() {
       const empId = document.getElementById('empId').value;
-      if(!empId) return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรอกเลขบัตรประชาชน', confirmButtonColor: '#4f46e5' });
+      if(!empId) return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณากรอกรหัสประจำตัว', confirmButtonColor: '#4f46e5' });
       
       Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
@@ -270,8 +320,8 @@
                 <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">การเดินทาง</span> <span class="text-lg">🚐 ${res.user.data[2]}</span></div>
                 <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">ผู้ติดตาม</span> <span class="text-lg">👥 ${res.user.data[3]} ${res.user.data[4] !== '-' ? `<br><span class="text-sm text-gray-600">(${res.user.data[4]})</span>` : ''}</span></div>
                 <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">ห้องพัก</span> <span class="text-lg">🔑 ห้อง ${res.user.data[5]} <span class="text-sm text-gray-500">(${res.user.data[6]})</span></span></div>
-                <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">การแพ้อาหาร</span> <span class="text-lg">🍲 ${res.user.data[8] || res.user.data[7] || '-'}</span></div>
-                <div class="bg-white p-3 rounded-lg border border-emerald-100 md:col-span-2"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">ที่นั่งรถทัวร์</span> <span class="text-lg">💺 ${res.user.data[7] || '-'}</span></div>
+                <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">การแพ้อาหาร</span> <span class="text-lg">🍲 ${res.user.data[7] || '-'}</span></div>
+                <div class="bg-white p-3 rounded-lg border border-emerald-100 md:col-span-2"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">ที่นั่งรถทัวร์</span> <span class="text-lg">💺 ${res.user.data[8] || '-'}</span></div>
               </div>
               <div class="mt-5 pt-3 border-t border-emerald-200/60 text-sm text-emerald-700 font-semibold flex items-center">
                 <span class="mr-1.5">💡</span> หากต้องการแก้ไขข้อมูล โปรดแจ้งแอดมินกลุ่มบริหารงานบุคคล
@@ -283,6 +333,10 @@
             renderRooms();
             if(res.config.BusMenu === 'ON') document.getElementById('busSection').classList.remove('hidden');
           }
+
+          // เริ่มต้น Real-time Polling
+          startRealtimeSync();
+
         } else {
           Swal.fire({ icon: 'error', title: 'ไม่พบข้อมูล', text: res.message, confirmButtonColor: '#4f46e5' });
         }
@@ -333,7 +387,14 @@
       }
     }
 
-    // ฟังก์ชันสร้างช่องกรอกข้อมูลผู้ติดตามตามจำนวนที่เลือก
+    function logout() {
+      stopRealtimeSync();
+      location.reload();
+    }
+
+    // ----------------------------------------------------
+    // UI Renderers & Events
+    // ----------------------------------------------------
     function renderFollowerInputs() {
       const count = parseInt(document.getElementById('followerCount').value);
       const followerList = document.getElementById('followerList');
@@ -454,7 +515,7 @@
         `;
       });
 
-      if (!isValidSelection) {
+      if (!isValidSelection && selectedRoomToBook !== '') {
         selectedRoomToBook = ''; 
         document.getElementById('bedAlert').classList.add('hidden');
         document.getElementById('bedSingle').disabled = false;
@@ -509,9 +570,9 @@
       if (count === 0) return '-';
       let details = [];
       for (let i = 1; i <= count; i++) {
-        const name = document.getElementById(`f_name_${i}`).value.trim();
-        const age = document.getElementById(`f_age_${i}`).value;
-        const gender = document.getElementById(`f_gender_${i}`).value;
+        const name = document.getElementById(`f_name_${i}`) ? document.getElementById(`f_name_${i}`).value.trim() : '';
+        const age = document.getElementById(`f_age_${i}`) ? document.getElementById(`f_age_${i}`).value : '';
+        const gender = document.getElementById(`f_gender_${i}`) ? document.getElementById(`f_gender_${i}`).value : '';
         let str = `คนที่ ${i}: ${gender}, ${age}`;
         if (name) str += ` (${name})`;
         details.push(str);
@@ -532,6 +593,8 @@
 
     function submitData() {
       if(!selectedRoomToBook) return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาคลิกเลือกห้องพักให้เรียบร้อย', confirmButtonColor: '#4f46e5' });
+      
+      isSubmitting = true; // หยุด Polling ชั่วคราวเพื่อส่งข้อมูล
       Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
       const followerCountVal = document.getElementById('followerCount').value;
@@ -553,12 +616,16 @@
       fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
         .then(r => r.json())
         .then(res => {
+          isSubmitting = false;
           if(res.success) {
             Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'บันทึกข้อมูลของคุณเรียบร้อยแล้ว', confirmButtonColor: '#10b981' }).then(() => login());
           } else {
             Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: res.message, confirmButtonColor: '#4f46e5' });
           }
-        }).catch(() => Swal.fire({ icon: 'error', title: 'ข้อผิดพลาด', text: 'เกิดปัญหาในการส่งข้อมูล', confirmButtonColor: '#4f46e5' }));
+        }).catch(() => {
+          isSubmitting = false;
+          Swal.fire({ icon: 'error', title: 'ข้อผิดพลาด', text: 'เกิดปัญหาในการส่งข้อมูล', confirmButtonColor: '#4f46e5' });
+        });
     }
   </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ| โรงเรียนเมืองสุราษฎร์ธานี</title>
+  <title>ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ | โรงเรียนเมืองสุราษฎร์ธานี</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
     </header>
 
     <section id="loginSection" class="max-w-md mx-auto space-y-4">
-      <input id="empId" type="text" inputmode="numeric" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกเลขประชาชน">
+      <input id="empId" type="text" inputmode="numeric" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกรหัสประจำตัวประชาชน">
       <button onclick="login()" class="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-white font-bold shadow-lg hover:-translate-y-0.5 transition">เข้าสู่ระบบ</button>
       <button onclick="adminLogin()" class="w-full text-sm text-slate-400 hover:text-indigo-600 font-semibold">🔒 สำหรับผู้ดูแลระบบ</button>
     </section>
@@ -82,7 +82,7 @@
           <div class="mb-5 rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 shadow-sm">
             <div class="flex items-start gap-3 text-amber-900 font-extrabold">
               <span class="text-2xl leading-none">📢</span>
-              <p class="leading-relaxed">ประกาศ: ลงห้องพักเฉพาะครูและบุคลากร ผู้ติดตามแอดมินจะเป็นคนลงให้ค่ะ</p>
+              <p class="leading-relaxed">ประกาศ: ลงห้องพักเฉพาะครู ผู้ติดตามแอดมินจะเป็นคนลงให้ค่ะ</p>
             </div>
           </div>
           <div class="flex flex-col md:flex-row justify-between gap-2 mb-4">
@@ -227,7 +227,7 @@ function logout(){ stopRealtime(); location.reload(); }
 async function login() {
   if (isSubmitting) return;
   const empId = document.getElementById('empId').value.trim();
-  if (!empId) return Swal.fire('แจ้งเตือน','กรอกเลขประชาชน','warning');
+  if (!empId) return Swal.fire('แจ้งเตือน','กรอกรหัสประจำตัวประชาชน','warning');
   Swal.fire({title:'กำลังตรวจสอบข้อมูล...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
   try {
     const res = await api({action:'login',empId});
@@ -291,7 +291,7 @@ function toggleFoodOther(){
   document.getElementById('foodOtherDiv')?.classList.toggle('hidden',!show);
 }
 function getFoodAllergy(){
-  if(!isOn('FoodMenu')) return '-';
+  if(config.FoodMenu !== undefined && !isOn('FoodMenu')) return '-';
   const type=document.getElementById('foodType')?.value||'ไม่มี (ทานได้ปกติ)';
   const detail=document.getElementById('foodDetail')?.value.trim()||'';
   if(type==='อื่นๆ') return detail ? `อื่นๆ: ${detail}` : 'อื่นๆ';

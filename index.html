@@ -20,12 +20,12 @@
   <main id="mainCard" class="card max-w-5xl mx-auto rounded-[2rem] p-5 md:p-9">
     <header class="text-center mb-8">
       <img src="https://i.postimg.cc/SsQyTk6X/Screenshot-2026-08-18-124039.png" class="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover mx-auto shadow-lg border-4 border-white" alt="logo">
-      <h1 class="mt-4 text-1xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-500">ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ</h1>
-      <p class="text-slate-500 mt-2">การพัฒนาหลักสูตรพหุปัญญา(MIP)และนวัตกรรมการจัดการเรียนรู้สู่การพัฒนาคุณภาพผู้เรียน</p>
+      <h1 class="mt-4 text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-500">ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ</h1>
+      <p class="text-slate-500 mt-2">โรงเรียนเมืองสุราษฎร์ธานี</p>
     </header>
 
     <section id="loginSection" class="max-w-md mx-auto space-y-4">
-      <input id="empId" type="text" inputmode="numeric" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกเลขประจำตัวประชาชน">
+      <input id="empId" type="text" inputmode="numeric" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกเลขบัตรประชาชน">
       <button onclick="login()" class="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-white font-bold shadow-lg hover:-translate-y-0.5 transition">เข้าสู่ระบบ</button>
       <button onclick="adminLogin()" class="w-full text-sm text-slate-400 hover:text-indigo-600 font-semibold">🔒 สำหรับผู้ดูแลระบบ</button>
     </section>
@@ -156,18 +156,56 @@ let adminPassword = '';
 let adminData = null;
 let currentAdminTab = 'registered';
 
-async function api(payload) {
-  const response = await fetch(API_URL, { method:'POST', body:JSON.stringify(payload) });
-  if (!response.ok) throw new Error('HTTP ' + response.status);
-  return response.json();
+const API_TIMEOUT_MS = 30000;
+let activeRequests = 0;
+
+async function api(payload, timeoutMs = API_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  activeRequests++;
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      // text/plain เป็น Simple Request จึงไม่สร้าง CORS preflight ที่ไม่จำเป็น
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      cache: 'no-store',
+      redirect: 'follow',
+      signal: controller.signal
+    });
+
+    const text = await response.text();
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${text.slice(0,180)}`);
+    if (!text) throw new Error('Apps Script ตอบกลับมาเป็นข้อมูลว่าง');
+
+    try {
+      return JSON.parse(text);
+    } catch (_) {
+      throw new Error('Apps Script ไม่ได้ส่ง JSON กลับมา: ' + text.slice(0,180));
+    }
+  } catch (err) {
+    if (err && err.name === 'AbortError') {
+      throw new Error('หมดเวลารอ Apps Script (30 วินาที) กรุณาตรวจสอบ Deployment แล้วลองใหม่');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+    activeRequests = Math.max(0, activeRequests - 1);
+  }
+}
+
+function errorMessage(err) {
+  return err && err.message ? err.message : String(err || 'Unknown error');
 }
 function esc(v='') { return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 function isOn(key) { return String(config[key] || 'OFF').toUpperCase() === 'ON'; }
 function logout(){ stopRealtime(); location.reload(); }
 
 async function login() {
+  if (isSubmitting) return;
   const empId = document.getElementById('empId').value.trim();
-  if (!empId) return Swal.fire('แจ้งเตือน','กรอกเลขประจำตัวประชาชน','warning');
+  if (!empId) return Swal.fire('แจ้งเตือน','กรอกเลขบัตรประชาชน','warning');
   Swal.fire({title:'กำลังตรวจสอบข้อมูล...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
   try {
     const res = await api({action:'login',empId});
@@ -191,8 +229,11 @@ async function login() {
       applyMenuConfig(); renderRooms(); renderSeats(); transportChanged();
     }
     startRealtime();
-  } catch(e) { Swal.fire('เชื่อมต่อไม่ได้','กรุณาลองใหม่อีกครั้ง','error'); }
+  } catch(e) {
+    Swal.fire({icon:'error',title:'โหลดข้อมูลไม่ได้',html:`<div class="text-left text-sm"><b>สาเหตุที่ระบบได้รับ:</b><br>${esc(errorMessage(e))}<br><br><span class="text-slate-500">ตรวจสอบว่า Apps Script ได้ Deploy เป็น Web app เวอร์ชันล่าสุด และสิทธิ์การเข้าถึงเป็น Anyone</span></div>`,confirmButtonText:'ตกลง'});
+  }
 }
+
 
 function renderQuickLinks(){
   let html='';
@@ -281,7 +322,7 @@ async function submitData(){
     isSubmitting=false;
     if(!res.success)return Swal.fire('บันทึกไม่สำเร็จ',res.message,'error');
     await Swal.fire('สำเร็จ','บันทึกข้อมูลเรียบร้อยแล้ว','success'); login();
-  }catch(e){isSubmitting=false;Swal.fire('เชื่อมต่อไม่ได้','กรุณาลองใหม่','error');}
+  }catch(e){isSubmitting=false;Swal.fire('บันทึกไม่ได้',errorMessage(e),'error');}
 }
 
 function showPending(){
@@ -299,12 +340,27 @@ function renderPublicSummary(){
   wrap.innerHTML=roomHtml+seatHtml;
 }
 
-function startRealtime(){ stopRealtime(); realtimeTimer=setInterval(fetchLiveData,5000); }
+const REALTIME_INTERVAL_MS = 12000;
+function startRealtime(){
+  stopRealtime();
+  realtimeTimer=setInterval(()=>{ if(!document.hidden) fetchLiveData(); },REALTIME_INTERVAL_MS);
+}
 function stopRealtime(){ if(realtimeTimer)clearInterval(realtimeTimer); realtimeTimer=null; }
 async function fetchLiveData(){
-  if(isSubmitting)return;
-  try{const res=await api({action:'getLiveData'}); if(!res.success)return; globalRooms=res.rooms||[];globalSeats=res.seats||[];config={...config,...res.config}; if(!document.getElementById('surveyForm').classList.contains('hidden')){applyMenuConfig();renderRooms();renderSeats();transportChanged();} if(!document.getElementById('submittedView').classList.contains('hidden')&&isOn('SummaryMenu'))renderPublicSummary();}catch(_){ }
+  if(isSubmitting || document.hidden || activeRequests>0)return;
+  try{
+    const res=await api({action:'getLiveData'},15000);
+    if(!res.success)return;
+    globalRooms=res.rooms||[];
+    globalSeats=res.seats||[];
+    config={...config,...(res.config||{})};
+    if(!document.getElementById('surveyForm').classList.contains('hidden')){
+      applyMenuConfig(); renderRooms(); renderSeats(); transportChanged();
+    }
+    if(!document.getElementById('submittedView').classList.contains('hidden')&&isOn('SummaryMenu')) renderPublicSummary();
+  }catch(e){ console.warn('Realtime sync:', errorMessage(e)); }
 }
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && currentEmpId) fetchLiveData(); });
 
 async function adminLogin(){
   const x=await Swal.fire({title:'ผู้ดูแลระบบ',input:'password',inputLabel:'รหัสผ่าน Admin',showCancelButton:true,confirmButtonText:'เข้าสู่ระบบ'});
@@ -319,7 +375,7 @@ async function refreshAdmin(first=false){
     adminData=res; config=res.config||{};
     if(first){Swal.close();document.getElementById('loginSection').classList.add('hidden');document.getElementById('adminSection').classList.remove('hidden');}
     renderAdmin();
-  }catch(e){Swal.fire('เชื่อมต่อไม่ได้','กรุณาลองใหม่','error');}
+  }catch(e){Swal.fire('โหลดข้อมูล Admin ไม่ได้',errorMessage(e),'error');}
 }
 function renderAdmin(){
   const reg=adminData.registered||[], pend=adminData.pending||[], rooms=adminData.rooms||[], seats=adminData.seats||[];
@@ -352,6 +408,16 @@ async function cancelRegistration(empId,name){
   if(!res.success)return Swal.fire('ผิดพลาด',res.message,'error');
   await Swal.fire('เรียบร้อย',res.message,'success'); await refreshAdmin();
 }
+
+// กด Enter ที่ช่องรหัสเพื่อ Login
+ document.getElementById('empId').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+
+// ใช้ใน Console ได้: testApi() เพื่อตรวจว่า Deployment ตอบกลับหรือไม่
+async function testApi(){
+  try { const r=await api({action:'ping'},15000); console.log('API OK',r); return r; }
+  catch(e){ console.error('API ERROR',e); throw e; }
+}
+
 </script>
 </body>
 </html>

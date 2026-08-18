@@ -33,7 +33,7 @@
       <h2 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-500 tracking-tight pb-1">
         ระบบบริหารจัดการศึกษาดูงาน
       </h2>
-      <p class="text-gray-500 mt-2 font-medium text-lg">งานพื้นที่นวัตกรรมการศึกษา โรงเรียนเมืองสุราษฎร์ธานี </p>
+      <p class="text-gray-500 mt-2 font-medium text-lg">งานพื้นที่นวัตกรรมการศึกษา โรงเรียนเมืองสุราษฎร์ธานี</p>
     </div>
 
     <!-- Login Section -->
@@ -96,39 +96,30 @@
           </div>
         </div>
 
-        <!-- 2. ผู้ติดตาม -->
+        <!-- 2. ผู้ติดตาม (รองรับมากกว่า 1 คน) -->
         <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
           <h3 class="font-bold mb-4 text-gray-800 text-lg flex items-center"><span class="bg-blue-100 text-blue-700 rounded-lg w-8 h-8 flex items-center justify-center mr-3 shadow-sm">2</span> ผู้ติดตาม</h3>
-          <select id="hasFollower" onchange="toggleFollower(); renderRooms();" class="w-full border-2 border-gray-200 p-3.5 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-400 outline-none transition-all font-medium text-gray-700">
-            <option value="ไม่มี">ไม่มีผู้ติดตาม</option>
-            <option value="มี">มีผู้ติดตาม</option>
+          <label class="block text-sm font-medium text-gray-600 mb-2">จำนวนผู้ติดตาม</label>
+          <select id="followerCount" onchange="renderFollowerInputs()" class="w-full border-2 border-gray-200 p-3.5 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-400 outline-none transition-all font-medium text-gray-700">
+            <option value="0">ไม่มีผู้ติดตาม</option>
+            <option value="1">1 คน</option>
+            <option value="2">2 คน</option>
+            <option value="3">3 คน</option>
+            <option value="4">4 คน</option>
+            <option value="5">5 คน</option>
           </select>
           
-          <div id="followerDiv" class="hidden mt-4 p-5 bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 rounded-xl">
-            <p class="text-sm text-rose-600 mb-4 font-semibold flex items-center">
-              <span class="text-lg mr-1.5">⚠️</span> หากผู้ติดตามอายุมากกว่า 12 ปี ระบบจะบังคับให้เลือกห้องที่ว่างทั้ง 2 เตียง
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4">
-              <div class="flex-1">
-                <label class="block text-xs text-rose-700 font-bold mb-1.5 uppercase tracking-wider">อายุ</label>
-                <select id="f_age" onchange="renderRooms()" class="w-full border-2 border-white p-3 rounded-xl bg-white focus:border-rose-300 outline-none shadow-sm text-gray-700 font-medium">
-                  <option value="<12">ต่ำกว่า 12 ปี</option>
-                  <option value=">12">มากกว่า 12 ปี</option>
-                </select>
-              </div>
-              <div class="flex-1">
-                <label class="block text-xs text-rose-700 font-bold mb-1.5 uppercase tracking-wider">เพศ</label>
-                <select id="f_gender" class="w-full border-2 border-white p-3 rounded-xl bg-white focus:border-rose-300 outline-none shadow-sm text-gray-700 font-medium">
-                  <option>ชาย</option>
-                  <option>หญิง</option>
-                </select>
-              </div>
-            </div>
-          </div>
+          <div id="followerList" class="hidden mt-4 space-y-4"></div>
         </div>
 
         <!-- 3. ห้องพัก -->
         <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
+          <!-- ข้อความประกาศ -->
+          <div class="bg-amber-50 border-2 border-amber-200 p-3.5 rounded-xl text-amber-800 text-sm font-bold flex items-center mb-5 shadow-sm">
+            <span class="text-2xl mr-2.5">📢</span>
+            <span><strong>ประกาศ:</strong> ลงห้องพักเฉพาะครู ผู้ติดตามแอดมินจะเป็นคนลงให้ค่ะ</span>
+          </div>
+
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-bold text-gray-800 text-lg flex items-center"><span class="bg-blue-100 text-blue-700 rounded-lg w-8 h-8 flex items-center justify-center mr-3 shadow-sm">3</span> เลือกห้องพัก</h3>
             <span class="text-xs font-semibold bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg border border-indigo-100">คลิกที่ห้องเพื่อเลือก</span>
@@ -151,9 +142,25 @@
           </div>
         </div>
 
-        <!-- 4. รถทัวร์ -->
+        <!-- 4. ข้อมูลการแพ้อาหาร -->
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
+          <h3 class="font-bold mb-4 text-gray-800 text-lg flex items-center"><span class="bg-blue-100 text-blue-700 rounded-lg w-8 h-8 flex items-center justify-center mr-3 shadow-sm">4</span> ข้อมูลการแพ้อาหาร / ข้อจำกัดด้านอาหาร</h3>
+          <select id="foodType" onchange="toggleFoodOther()" class="w-full border-2 border-gray-200 p-3.5 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-400 outline-none transition-all font-medium text-gray-700">
+            <option value="ไม่มี (ทานได้ปกติ)">ไม่มี (ทานได้ปกติ)</option>
+            <option value="ฮาลาล / มุสลิม">ฮาลาล / มุสลิม</option>
+            <option value="มังสวิรัติ / เจ">มังสวิรัติ / เจ</option>
+            <option value="แพ้อาหารทะเล">แพ้อาหารทะเล</option>
+            <option value="อื่นๆ">อื่นๆ (ระบุรายละเอียดเพิ่มเติม)</option>
+          </select>
+          
+          <div id="foodOtherDiv" class="hidden mt-3">
+            <input type="text" id="foodDetail" class="w-full border-2 border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-400 outline-none transition-all text-gray-700 font-medium" placeholder="ระบุรายละเอียดอาหารที่แพ้ หรือข้อจำกัดเพิ่มเติม">
+          </div>
+        </div>
+
+        <!-- 5. รถทัวร์ -->
         <div id="busSection" class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all hidden">
-          <h3 class="font-bold mb-4 text-gray-800 text-lg flex items-center"><span class="bg-blue-100 text-blue-700 rounded-lg w-8 h-8 flex items-center justify-center mr-3 shadow-sm">4</span> เลือกที่นั่งบนรถทัวร์</h3>
+          <h3 class="font-bold mb-4 text-gray-800 text-lg flex items-center"><span class="bg-blue-100 text-blue-700 rounded-lg w-8 h-8 flex items-center justify-center mr-3 shadow-sm">5</span> เลือกที่นั่งบนรถทัวร์</h3>
           <input type="text" id="busSeat" class="w-full border-2 border-gray-200 p-3.5 rounded-xl focus:ring-4 focus:ring-blue-50 focus:border-blue-400 outline-none transition-all text-gray-700 font-medium" placeholder="ตัวอย่าง: A1, โซนหน้า, ติดหน้าต่าง ฯลฯ">
         </div>
 
@@ -203,6 +210,7 @@
                   <th class="p-4 font-bold">การเดินทาง</th>
                   <th class="p-4 font-bold">ผู้ติดตาม</th>
                   <th class="p-4 font-bold">ห้องพัก</th>
+                  <th class="p-4 font-bold">การแพ้อาหาร</th>
                   <th class="p-4 font-bold">รถทัวร์</th>
                 </tr>
               </thead>
@@ -260,9 +268,10 @@
             document.getElementById('sumData').innerHTML = `
               <div class="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-5">
                 <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">การเดินทาง</span> <span class="text-lg">🚐 ${res.user.data[2]}</span></div>
-                <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">ผู้ติดตาม</span> <span class="text-lg">👥 ${res.user.data[3]} ${res.user.data[4] !== '-' ? `<span class="text-sm text-gray-500">(${res.user.data[4]})</span>` : ''}</span></div>
+                <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">ผู้ติดตาม</span> <span class="text-lg">👥 ${res.user.data[3]} ${res.user.data[4] !== '-' ? `<br><span class="text-sm text-gray-600">(${res.user.data[4]})</span>` : ''}</span></div>
                 <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">ห้องพัก</span> <span class="text-lg">🔑 ห้อง ${res.user.data[5]} <span class="text-sm text-gray-500">(${res.user.data[6]})</span></span></div>
-                <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">ที่นั่งรถทัวร์</span> <span class="text-lg">💺 ${res.user.data[7] || '-'}</span></div>
+                <div class="bg-white p-3 rounded-lg border border-emerald-100"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">การแพ้อาหาร</span> <span class="text-lg">🍲 ${res.user.data[8] || res.user.data[7] || '-'}</span></div>
+                <div class="bg-white p-3 rounded-lg border border-emerald-100 md:col-span-2"><span class="text-gray-400 text-xs font-bold uppercase block mb-1">ที่นั่งรถทัวร์</span> <span class="text-lg">💺 ${res.user.data[7] || '-'}</span></div>
               </div>
               <div class="mt-5 pt-3 border-t border-emerald-200/60 text-sm text-emerald-700 font-semibold flex items-center">
                 <span class="mr-1.5">💡</span> หากต้องการแก้ไขข้อมูล โปรดแจ้งแอดมินกลุ่มบริหารงานบุคคล
@@ -308,11 +317,12 @@
                 <td class="p-4"><span class="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-xs font-bold">${u.transport}</span></td>
                 <td class="p-4">${u.follower}</td>
                 <td class="p-4 font-bold text-indigo-600">ห้อง ${u.room} <br><span class="text-[11px] font-normal text-gray-500">${u.bed}</span></td>
-                <td class="p-4 text-gray-600 font-medium">${u.bus}</td>
+                <td class="p-4 text-gray-600 font-medium">${u.food || '-'}</td>
+                <td class="p-4 text-gray-600 font-medium">${u.bus || '-'}</td>
               </tr>
             `).join('');
             
-            if(res.data.length === 0) tableHtml = '<tr><td colspan="5" class="p-8 text-center text-gray-400 font-medium">ยังไม่มีข้อมูลผู้ลงทะเบียน</td></tr>';
+            if(res.data.length === 0) tableHtml = '<tr><td colspan="6" class="p-8 text-center text-gray-400 font-medium">ยังไม่มีข้อมูลผู้ลงทะเบียน</td></tr>';
             document.getElementById('adminTableBody').innerHTML = tableHtml;
           } else {
             Swal.fire({ icon: 'error', title: 'ปฏิเสธการเข้าถึง', text: res.message, confirmButtonColor: '#ef4444' });
@@ -323,10 +333,57 @@
       }
     }
 
-    function toggleFollower() {
-      const followerDiv = document.getElementById('followerDiv');
-      if (document.getElementById('hasFollower').value === 'มี') followerDiv.classList.remove('hidden');
-      else followerDiv.classList.add('hidden');
+    // ฟังก์ชันสร้างช่องกรอกข้อมูลผู้ติดตามตามจำนวนที่เลือก
+    function renderFollowerInputs() {
+      const count = parseInt(document.getElementById('followerCount').value);
+      const followerList = document.getElementById('followerList');
+      
+      if (count === 0) {
+        followerList.classList.add('hidden');
+        followerList.innerHTML = '';
+        return;
+      }
+
+      followerList.classList.remove('hidden');
+      let html = '';
+      for (let i = 1; i <= count; i++) {
+        html += `
+          <div class="p-4 bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 rounded-xl space-y-3">
+            <div class="font-bold text-rose-700 text-sm">ผู้ติดตามคนที่ ${i}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs text-rose-700 font-bold mb-1">ชื่อ-สกุล / ความสัมพันธ์</label>
+                <input type="text" id="f_name_${i}" placeholder="เช่น ด.ช.สมชาย / บุตร" class="w-full border-2 border-white p-2.5 rounded-xl bg-white text-sm focus:border-rose-300 outline-none text-gray-700 font-medium">
+              </div>
+              <div>
+                <label class="block text-xs text-rose-700 font-bold mb-1">อายุ</label>
+                <select id="f_age_${i}" class="w-full border-2 border-white p-2.5 rounded-xl bg-white text-sm focus:border-rose-300 outline-none text-gray-700 font-medium">
+                  <option value="ต่ำกว่า 12 ปี">ต่ำกว่า 12 ปี</option>
+                  <option value="มากกว่า 12 ปี">มากกว่า 12 ปี</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs text-rose-700 font-bold mb-1">เพศ</label>
+                <select id="f_gender_${i}" class="w-full border-2 border-white p-2.5 rounded-xl bg-white text-sm focus:border-rose-300 outline-none text-gray-700 font-medium">
+                  <option value="ชาย">ชาย</option>
+                  <option value="หญิง">หญิง</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      followerList.innerHTML = html;
+    }
+
+    function toggleFoodOther() {
+      const foodType = document.getElementById('foodType').value;
+      const foodOtherDiv = document.getElementById('foodOtherDiv');
+      if (foodType === 'อื่นๆ' || foodType === 'แพ้อาหารทะเล') {
+        foodOtherDiv.classList.remove('hidden');
+      } else {
+        foodOtherDiv.classList.add('hidden');
+      }
     }
 
     function selectRoomToBook(roomNo) {
@@ -359,9 +416,6 @@
     }
 
     function renderRooms() {
-      const hasFollower = document.getElementById('hasFollower').value;
-      const f_age = document.getElementById('f_age').value;
-      const needsTwoBeds = (hasFollower === 'มี' && f_age === '>12');
       let gridHtml = '';
       let isValidSelection = false;
 
@@ -372,8 +426,7 @@
 
       sortedRooms.forEach(r => {
         let isFull = r.isFull;
-        let hasOnePerson = (r.p1 !== ''); 
-        let disabled = isFull || (needsTwoBeds && hasOnePerson);
+        let disabled = isFull; 
         if (r.roomNo === selectedRoomToBook && !disabled) isValidSelection = true;
 
         let borderClass = '';
@@ -451,23 +504,50 @@
       });
     }
 
+    function getFollowerDetailsString() {
+      const count = parseInt(document.getElementById('followerCount').value);
+      if (count === 0) return '-';
+      let details = [];
+      for (let i = 1; i <= count; i++) {
+        const name = document.getElementById(`f_name_${i}`).value.trim();
+        const age = document.getElementById(`f_age_${i}`).value;
+        const gender = document.getElementById(`f_gender_${i}`).value;
+        let str = `คนที่ ${i}: ${gender}, ${age}`;
+        if (name) str += ` (${name})`;
+        details.push(str);
+      }
+      return details.join(' | ');
+    }
+
+    function getFoodAllergyString() {
+      const foodType = document.getElementById('foodType').value;
+      const foodDetail = document.getElementById('foodDetail').value.trim();
+      if (foodType === 'อื่นๆ') {
+        return foodDetail ? `อื่นๆ: ${foodDetail}` : 'อื่นๆ';
+      } else if (foodType === 'แพ้อาหารทะเล' && foodDetail) {
+        return `แพ้อาหารทะเล (${foodDetail})`;
+      }
+      return foodType;
+    }
+
     function submitData() {
       if(!selectedRoomToBook) return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาคลิกเลือกห้องพักให้เรียบร้อย', confirmButtonColor: '#4f46e5' });
       Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-      let f_detail = '-';
-      if(document.getElementById('hasFollower').value === 'มี') f_detail = `เพศ: ${document.getElementById('f_gender').value}, อายุ: ${document.getElementById('f_age').value}`;
+      const followerCountVal = document.getElementById('followerCount').value;
+      const hasFollowerText = followerCountVal === '0' ? 'ไม่มี' : `${followerCountVal} คน`;
 
       const payload = {
         action: 'submitData',
         empId: document.getElementById('empId').value,
         userName: currentUserName,
         transport: document.querySelector('input[name="transport"]:checked').value,
-        hasFollower: document.getElementById('hasFollower').value,
-        followerDetails: f_detail,
+        hasFollower: hasFollowerText,
+        followerDetails: getFollowerDetailsString(),
+        foodAllergy: getFoodAllergyString(),
         roomSelect: selectedRoomToBook,
         bedType: document.querySelector('input[name="bed"]:checked').value,
-        busSeat: document.getElementById('busSeat').value || '-'
+        busSeat: document.getElementById('busSeat') ? (document.getElementById('busSeat').value || '-') : '-'
       };
 
       fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })

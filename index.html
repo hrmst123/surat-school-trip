@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ | โรงเรียนเมืองสุราษฎร์ธานี</title>
+  <title>ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ| โรงเรียนเมืองสุราษฎร์ธานี</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,11 +21,11 @@
     <header class="text-center mb-8">
       <img src="https://i.postimg.cc/SsQyTk6X/Screenshot-2026-08-18-124039.png" class="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover mx-auto shadow-lg border-4 border-white" alt="logo">
       <h1 class="mt-4 text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-500">ระบบสำรวจการเดินทางเพื่อประชุมเชิงปฏิบัติการฯ</h1>
-      <p class="text-slate-500 mt-2">การพัฒนาหลักสูตรพหุปัญญา(MIP)และนวัตกรรมการจัดการเรียนรู้สู่การพัฒนาคุณภาพผู้เรียน</p>
+      <p class="text-slate-500 mt-2">ารพัฒนาหลักสูตรพหุปัญญา(MIP)และนวัตกรรมการจัดการเรียนรู้สู่การพัฒนาคุณภาพผู้เรียน</p>
     </header>
 
     <section id="loginSection" class="max-w-md mx-auto space-y-4">
-      <input id="empId" type="text" inputmode="numeric" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกเลขประจำตัวประชาชน">
+      <input id="empId" type="text" inputmode="numeric" maxlength="13" pattern="[0-9]{13}" autocomplete="off" class="w-full rounded-2xl border-2 border-indigo-100 px-4 py-4 text-center text-lg outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก">
       <button onclick="login()" class="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-white font-bold shadow-lg hover:-translate-y-0.5 transition">เข้าสู่ระบบ</button>
       <button onclick="adminLogin()" class="w-full text-sm text-slate-400 hover:text-indigo-600 font-semibold">🔒 สำหรับผู้ดูแลระบบ</button>
     </section>
@@ -226,15 +226,24 @@ function logout(){ stopRealtime(); location.reload(); }
 
 async function login() {
   if (isSubmitting) return;
-  const empId = document.getElementById('empId').value.trim();
-  if (!empId) return Swal.fire('แจ้งเตือน','กรอกเลขประจำตัวประชาชน','warning');
-  Swal.fire({title:'กำลังตรวจสอบข้อมูล...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+  const empId = document.getElementById('empId').value.replace(/\D/g,'').trim();
+  if (!empId) return Swal.fire('แจ้งเตือน','กรุณากรอกเลขประจำตัวประชาชน','warning');
+  if (empId.length !== 13) return Swal.fire('แจ้งเตือน','กรุณากรอกเลขประจำตัวประชาชนให้ครบ 13 หลัก','warning');
+
+  Swal.fire({title:'กำลังตรวจสอบเลขประจำตัวประชาชน...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
   try {
-    const res = await api({action:'login',empId});
+    // คำขอแรกตรวจเฉพาะตัวตน + Config เพื่อให้ Login เร็ว
+    const res = await api({action:'login',empId},15000);
     if (!res.success) return Swal.fire('ไม่พบข้อมูล',res.message,'error');
+
+    currentEmpId = empId;
+    currentUserName = res.user.name;
+    pendingList = []; // โหลดเฉพาะเมื่อกดปุ่ม "รายชื่อที่ยังไม่ลง"
+    globalRooms = [];
+    globalSeats = [];
+    config = res.config || {};
+
     Swal.close();
-    currentEmpId = empId; currentUserName = res.user.name; pendingList = res.pending || [];
-    globalRooms = res.rooms || []; globalSeats = res.seats || []; config = res.config || {};
     document.getElementById('loginSection').classList.add('hidden');
     document.getElementById('userSection').classList.remove('hidden');
     document.getElementById('userName').textContent = currentUserName;
@@ -244,17 +253,49 @@ async function login() {
       document.getElementById('surveyForm').classList.add('hidden');
       document.getElementById('submittedView').classList.remove('hidden');
       renderMySummary(res.user);
-      if (isOn('SummaryMenu')) renderPublicSummary();
-      // ผู้ที่ส่งข้อมูลแล้วไม่ต้อง polling ต่อ ลดจำนวน request จำนวนมาก
       stopRealtime();
+      // โหลดสรุปห้อง/ที่นั่งภายหลังโดยไม่ขวางการ Login
+      if (isOn('SummaryMenu')) loadInitialLiveData(true);
     } else {
       document.getElementById('submittedView').classList.add('hidden');
       document.getElementById('surveyForm').classList.remove('hidden');
-      applyMenuConfig(); renderRooms(); renderSeats(); transportChanged();
+      applyMenuConfig();
+      showDataLoadingState();
+      // เปิดหน้าแบบฟอร์มก่อน แล้วค่อยโหลดห้อง/ที่นั่งตามหลัง
+      loadInitialLiveData(false);
       startRealtime();
     }
   } catch(e) {
-    Swal.fire({icon:'error',title:'โหลดข้อมูลไม่ได้',html:`<div class="text-left text-sm"><b>สาเหตุที่ระบบได้รับ:</b><br>${esc(errorMessage(e))}<br><br><span class="text-slate-500">ตรวจสอบว่า Apps Script ได้ Deploy เป็น Web app เวอร์ชันล่าสุด และสิทธิ์การเข้าถึงเป็น Anyone</span></div>`,confirmButtonText:'ตกลง'});
+    Swal.fire({icon:'error',title:'เข้าสู่ระบบไม่ได้',html:`<div class="text-left text-sm"><b>สาเหตุที่ระบบได้รับ:</b><br>${esc(errorMessage(e))}<br><br><span class="text-slate-500">กรุณาลองใหม่อีกครั้ง หากยังช้าให้ตรวจสอบ Apps Script Deployment</span></div>`,confirmButtonText:'ตกลง'});
+  }
+}
+
+function showDataLoadingState(){
+  const room=document.getElementById('roomGrid');
+  if(room && isOn('RoomMenu')) room.innerHTML='<div class="col-span-full text-center py-8 text-slate-400 font-semibold">⏳ กำลังโหลดห้องพัก...</div>';
+  const seat=document.getElementById('seatGrid');
+  if(seat && isOn('BusMenu')) seat.innerHTML='<div class="col-span-full text-center py-8 text-slate-400 font-semibold">⏳ กำลังโหลดที่นั่งรถ...</div>';
+}
+
+async function loadInitialLiveData(forSummary=false){
+  try{
+    const res=await api({action:'getLiveData'},20000);
+    if(!res.success) throw new Error(res.message||'โหลดข้อมูลไม่สำเร็จ');
+    globalRooms=res.rooms||[];
+    globalSeats=res.seats||[];
+    config={...config,...(res.config||{})};
+    if(forSummary){
+      if(isOn('SummaryMenu')) renderPublicSummary();
+      return;
+    }
+    applyMenuConfig();
+    renderRooms();
+    renderSeats();
+    transportChanged();
+  }catch(e){
+    const room=document.getElementById('roomGrid');
+    if(room && isOn('RoomMenu')) room.innerHTML=`<div class="col-span-full text-center py-6 text-rose-500">โหลดห้องพักไม่สำเร็จ<br><button type="button" onclick="loadInitialLiveData(false)" class="mt-2 px-3 py-2 rounded-lg border font-bold">ลองใหม่</button></div>`;
+    console.warn('Initial live data:',errorMessage(e));
   }
 }
 
@@ -367,9 +408,17 @@ async function submitData(){
   }catch(e){isSubmitting=false;Swal.fire('บันทึกไม่ได้',errorMessage(e),'error');}
 }
 
-function showPending(){
-  if(!pendingList.length)return Swal.fire('ครบแล้ว','ทุกคนลงข้อมูลครบแล้ว','success');
-  Swal.fire({title:`ยังไม่ลงข้อมูล ${pendingList.length} คน`,html:`<div class="text-left max-h-80 overflow-y-auto bg-slate-50 rounded-xl p-4">${pendingList.map((n,i)=>`${i+1}. ${esc(n)}`).join('<br>')}</div>`,confirmButtonText:'ปิด'});
+async function showPending(){
+  Swal.fire({title:'กำลังโหลดรายชื่อ...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+  try{
+    const res=await api({action:'getPending'},15000);
+    if(!res.success) return Swal.fire('โหลดรายชื่อไม่ได้',res.message||'กรุณาลองใหม่','error');
+    pendingList=res.pending||[];
+    if(!pendingList.length)return Swal.fire('ครบแล้ว','ทุกคนลงข้อมูลครบแล้ว','success');
+    Swal.fire({title:`ยังไม่ลงข้อมูล ${pendingList.length} คน`,html:`<div class="text-left max-h-80 overflow-y-auto bg-slate-50 rounded-xl p-4">${pendingList.map((n,i)=>`${i+1}. ${esc(n)}`).join('<br>')}</div>`,confirmButtonText:'ปิด'});
+  }catch(e){
+    Swal.fire('โหลดรายชื่อไม่ได้',errorMessage(e),'error');
+  }
 }
 function renderMySummary(u){
   const items=[['🚌 การเดินทาง',u.transport||'-'],['👨‍👩‍👧 ผู้ติดตาม',(u.follower||'-')+(u.followerDetails&&u.followerDetails!=='-'?`<br><span class="text-xs text-slate-500">${esc(u.followerDetails)}</span>`:'')],['🏨 ห้องพัก',u.room&&u.room!=='-'?`ห้อง ${esc(u.room)} (${esc(u.bed||'-')})`:'-'],['🍲 อาหาร / การแพ้อาหาร',esc(u.foodAllergy||'-')],['💺 ที่นั่งรถ',u.busSeat||'-']];

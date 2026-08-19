@@ -245,12 +245,14 @@ async function login() {
       document.getElementById('submittedView').classList.remove('hidden');
       renderMySummary(res.user);
       if (isOn('SummaryMenu')) renderPublicSummary();
+      // ผู้ที่ส่งข้อมูลแล้วไม่ต้อง polling ต่อ ลดจำนวน request จำนวนมาก
+      stopRealtime();
     } else {
       document.getElementById('submittedView').classList.add('hidden');
       document.getElementById('surveyForm').classList.remove('hidden');
       applyMenuConfig(); renderRooms(); renderSeats(); transportChanged();
+      startRealtime();
     }
-    startRealtime();
   } catch(e) {
     Swal.fire({icon:'error',title:'โหลดข้อมูลไม่ได้',html:`<div class="text-left text-sm"><b>สาเหตุที่ระบบได้รับ:</b><br>${esc(errorMessage(e))}<br><br><span class="text-slate-500">ตรวจสอบว่า Apps Script ได้ Deploy เป็น Web app เวอร์ชันล่าสุด และสิทธิ์การเข้าถึงเป็น Anyone</span></div>`,confirmButtonText:'ตกลง'});
   }
@@ -380,7 +382,7 @@ function renderPublicSummary(){
   wrap.innerHTML=roomHtml+seatHtml;
 }
 
-const REALTIME_INTERVAL_MS = 12000;
+const REALTIME_INTERVAL_MS = 60000; // ลดภาระ Apps Script เมื่อมีผู้ใช้พร้อมกันจำนวนมาก
 function startRealtime(){
   stopRealtime();
   realtimeTimer=setInterval(()=>{ if(!document.hidden) fetchLiveData(); },REALTIME_INTERVAL_MS);
@@ -400,7 +402,7 @@ async function fetchLiveData(){
     if(!document.getElementById('submittedView').classList.contains('hidden')&&isOn('SummaryMenu')) renderPublicSummary();
   }catch(e){ console.warn('Realtime sync:', errorMessage(e)); }
 }
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden && currentEmpId) fetchLiveData(); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && currentEmpId && !document.getElementById('surveyForm').classList.contains('hidden')) fetchLiveData(); });
 
 async function adminLogin(){
   const x=await Swal.fire({title:'ผู้ดูแลระบบ',input:'password',inputLabel:'รหัสผ่าน Admin',showCancelButton:true,confirmButtonText:'เข้าสู่ระบบ'});
